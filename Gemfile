@@ -7,7 +7,10 @@ gem 'rails', '3.1.0'
 
 gem 'sqlite3'
 
-
+group :development do
+  gem 'nifty-generators'
+end
+  
 # Gems used only for assets and not required
 # in production environments by default.
 group :assets do
@@ -31,3 +34,5 @@ group :test do
   # Pretty printed test output
   gem 'turn', :require => false
 end
+gem "bcrypt-ruby", :require => "bcrypt"
+gem "mocha", :group => :test

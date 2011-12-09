@@ -1,0 +1,24 @@
+<% title "Wallet" %>
+
+<p>
+  <strong>Name:</strong>
+  <%= @wallet.name %>
+</p>
+<p>
+  <strong>Salt:</strong>
+  <%= @wallet.salt %>
+</p>
+<p>
+  <strong>Crypto:</strong>
+  <%= @wallet.crypto %>
+</p>
+<p>
+  <strong>Ctext:</strong>
+  <%= @wallet.ctext %>
+</p>
+
+<p>
+  <%= link_to "Edit", edit_wallet_path(@wallet) %> |
+  <%= link_to "Destroy", @wallet, :confirm => 'Are you sure?', :method => :delete %> |
+  <%= link_to "View All", wallets_path %>
+</p>

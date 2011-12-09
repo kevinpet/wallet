@@ -1,0 +1,20 @@
+<%= form_for @wallet do |f| %>
+  <%= f.error_messages %>
+  <p>
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </p>
+  <p>
+    <%= f.label :salt %><br />
+    <%= f.text_field :salt %>
+  </p>
+  <p>
+    <%= f.label :crypto %><br />
+    <%= f.text_field :crypto %>
+  </p>
+  <p>
+    <%= f.label :ctext %><br />
+    <%= f.text_area :ctext %>
+  </p>
+  <p><%= f.submit %></p>
+<% end %>

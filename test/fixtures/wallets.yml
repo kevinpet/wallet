@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/Fixtures.html
+
+one:
+  name: MyString
+  salt: MyString
+  crypto: MyString
+  ctext: MyText
+
+two:
+  name: MyString
+  salt: MyString
+  crypto: MyString
+  ctext: MyText
