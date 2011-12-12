@@ -1,0 +1,25 @@
+<html xmlns:ng="http://angularjs.org">
+  <head>
+    <title>Wallet Details</title>
+  </head>
+  <body>
+    <div ng:controller="DetailsCtrl">
+      <form ng:submit="createVault()">
+	<label name="name">Vault name</label>
+	<input id="vaultName" name="name"/><br/>
+	<label name="password">Password</label>
+	<input id="password" name="password"/><br/>
+	<label name="confirm">Confirm</label>
+	<input id="confirm" name="confirm"/><br/>
+	<select name="crypto">
+	  <option ng:repeat="c in cryptos">{{ c }}</option>
+	</select>
+	<br/>
+	<input type="submit" name="submit"/>
+      </form>
+      <button ng:click="cancel()">Cancel</button>
+    </div>
+    <script src="/javascripts/angular.min.js" ng:autobind></script>
+    <%= javascript_include_tag "application" -%>
+  </body>
+</html>

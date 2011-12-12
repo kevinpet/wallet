@@ -1,0 +1,111 @@
+
+angular.service('Config', function($route, $location, $window, $xhr) {
+    $xhr.defaults.headers.post['Content-Type'] = 'application/json';
+    $xhr.defaults.headers.put['Content-Type'] = 'application/json';
+
+    var token = $("meta[name='csrf-token']").attr("content");
+    $xhr.defaults.headers.post['X-CSRF-Token'] = token;
+    $xhr.defaults.headers.put['X-CSRF-Token'] = token;
+    $xhr.defaults.headers['delete']['X-CSRF-Token'] = token;
+
+    $route.when('/vaults', {template: '<%= asset_path "vaults.html"%>', controller: VaultsCtrl});
+    $route.when('/view', {template: '<%= asset_path "viewer.html"%>', controller: ViewCtrl});
+
+    var self = this;
+
+    $route.onChange(function() {
+	if ($location.hash === '') {
+	    $location.updateHash('/vaults');
+	    self.$eval();
+	} else {
+	    $route.current.scope.params = $route.current.params;
+	    $window.scrollTo(0,0);
+	}
+    });
+}, {inject: ['$route', '$location', '$window', '$xhr'], $eager: true})
+
+angular.service('Aes', function() {
+    var KEY_SIZE = 256 / 8;
+    var BLOCK_SIZE = 128 / 8;
+    var MODE = slowAES.modeOfOperation.CBC;
+    function progress(category, vault) {
+	return function(p) {
+	    var status = "PBKDF2 (" + category + ") at " + p.toFixed() + "%";
+	    if (vault) {
+		vault.progress(status);
+	    } else {
+		console.log(status);
+	    }
+	}
+    }
+    function get_key_and_iv(password, salt, vault, callback, keyRounds, ivRounds) {
+	pbkdf2_key = new PBKDF2(password, salt, keyRounds, KEY_SIZE);
+	pbkdf2_iv = new PBKDF2(password, salt, ivRounds, BLOCK_SIZE);
+	pbkdf2_key.deriveKey(progress("key", vault), function(key) {
+	    pbkdf2_iv.deriveKey(progress("iv", vault), function(iv) {
+		callback(key, iv);
+	    });
+	});
+    }
+    function log_bytes(desc, bytes) {
+	console.log(desc + ": " + bytes);
+    }
+    function precompute(password, vault, callback, keyRounds, ivRounds) {
+	if (!vault.salt) {
+	    var salt1 = cryptoHelpers.getRandom(0, 2147483647);
+	    var salt2 = cryptoHelpers.getRandom(0, 2147483647);
+	    vault.salt = cryptoHelpers.toHex(salt1) + cryptoHelpers.toHex(salt2);
+	}
+	get_key_and_iv(password, vault.salt, vault, function(k, iv) {
+	    vault.key = k;
+	    vault.iv = iv;
+	    (callback || angular.noop)(k, iv);
+	}, keyRounds, ivRounds);
+    }
+    var VERSIONS = {
+	aesWeak: { keyRounds: 10, ivRounds: 2 },
+	aesStandard: { keyRounds: 500, ivRounds: 100 },
+	aesParanoid: { keyRounds: 5000, ivRounds: 1000 }
+    };
+    return {
+	versions: (function() {
+	    var l = [];
+	    for (var v in VERSIONS) {
+		l.push(v);
+	    };
+	    return l;
+	})(),
+	precompute: function(password, vault, callback) {
+	    var v = VERSIONS[vault.crypto || 'aesWeak'];
+	    if (!v) {
+		throw new Error("Unsupported encryption version " + vault.crypto);
+	    }
+	    return precompute(password, vault, callback, v.keyRounds, v.ivRounds);
+	},
+	encrypt: function(vault) {
+	    if (!(vault.key && vault.iv)) {
+		throw new Error("Need key and iv already calculated, key was " + vault.key + ", iv was " + vault.iv);
+	    }
+	    var ptext = angular.toJson(vault.cards.map(function(c) { return c.toSerial() }));
+	    var bytes = cryptoHelpers.convertStringToByteArray(ptext);
+	    var ctext = slowAES.encrypt(bytes, MODE, vault.key, vault.iv);
+	    return cryptoHelpers.toHex(ctext);
+	},
+	decrypt: function (vault) {
+	    var bytes = cryptoHelpers.toNumbers(vault.ctext);
+	    var ptext = slowAES.decrypt(bytes, MODE, vault.key, vault.iv);
+	    var decoded = cryptoHelpers.convertByteArrayToString(ptext);
+	    return angular.fromJson(decoded);
+	}
+    };
+});
+
+angular.service('Blob', function($resource) {
+    
+    return $resource('/wallets/:wallet_id', {}, {
+	create: { method: 'POST' },
+	index: { method: 'GET', params: {wallet_id: ''}, isArray: true },
+	update: { method: 'PUT' },
+	destroy: { method: 'DELETE' }
+    });
+}, {inject: ['$resource']});

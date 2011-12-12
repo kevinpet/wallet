@@ -1,0 +1,20 @@
+<!doctype html>
+<html xmlns:ng="http://angularjs.org/">
+<head>
+  <meta charset="utf-8">
+  <title>JS Wallet</title>
+  <%= stylesheet_link_tag "application" %>
+  <%= csrf_meta_tag %>
+</head>
+<body>
+  <ul class="menu">
+    <li><a href="#/vaults">Vaults</a></li>
+    <li><a href="#/view">View</a></li>
+  </ul>
+
+  <ng:view></ng:view>
+  <script src="/javascripts/angular.min.js" ng:autobind></script>
+  <%= javascript_include_tag "application" -%>
+  <%= javascript_include_tag "crypto" -%>
+</body>
+</html>

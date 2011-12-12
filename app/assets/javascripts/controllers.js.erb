@@ -1,0 +1,183 @@
+'use strict';
+
+function VaultsCtrl(Blob, Aes) {
+    var Card = function(json) {
+	if (json) {
+	    this.id = json.id;
+	    this.name = json.name;
+	    this.details = json.details;
+	    this.expanded = false;
+	} else {
+	    this.name = "Unnamed";
+	    this.expanded = true;
+	}
+    }
+    Card.prototype.toggle = function() {
+	this.expanded = !this.expanded;
+    }
+    Card.prototype.hide = function() {
+	this.expanded = false;
+    }
+    Card.prototype.toSerial = function() {
+	var card = {
+	    name: this.name,
+	    details: this.details
+	};
+	return card;
+    }
+    var Vault = function(json) {
+	if (json) {
+	    this.id = json.id;
+	    this.name = json.name;
+	    this.salt = json.salt;
+	    this.ctext = json.ctext;
+	    this.crypto = json.crypto;
+	} else {
+	    this.cards = [];
+	    this.locked = false;
+	    this.editing = true;
+	}
+    }
+    Vault.prototype.toResource = function() {
+	return new Blob({ wallet_id: this.id,
+			  name: this.name,
+			  salt: this.salt,
+			  ctext: this.ctext,
+			  crypto: this.crypto
+			});
+    }
+    Vault.prototype.name = "Untitled";
+    Vault.prototype.locked = true;
+    Vault.prototype.editing = false;
+    Vault.prototype.lock = function() {
+	if (this.locked) {
+	    return;
+	}
+	this.locked = true;
+	this.ctext = Aes.encrypt(this);
+	this.cards = null;
+	this.progress(null);
+    };
+    Vault.prototype.progress = function (status) {
+	this.status = status;
+	self.$eval();
+    };
+    Vault.prototype.setPassword = function(password) {
+	this.salt = null;
+	this.key = null;
+	this.iv = null;
+	this.password = password;
+	Aes.precompute(password, this);
+	this.progress(null);
+    }
+    Vault.prototype.toggle = function() {
+	this.editing = !this.editing;
+    }
+    Vault.prototype.unlock = function(ptext) {
+	if (!this.locked) {
+	    return;
+	}
+	this.locked = false;
+	this.status = null;
+	this.cards = (ptext || []).map(function(c) { return new Card(c); });
+	this.ctext = null;
+	this.progress(null);
+    };
+    Vault.prototype.update = function(info) {
+	if (!info) {
+	    return;
+	}
+	console.log("Update info was: " + angular.toJson(info));
+	this.name = info.name;
+	this.crypto = info.crypto;
+	this.setPassword(info.password);
+    };
+    var self = this;
+    Blob.query({}, function(r, hdrs) {
+	window._loaded = r;
+	var mapped = r.map(function(j) { return new Vault(j); });
+	window._mapped = mapped;
+	self.vaults = mapped;
+    });
+    this.addCard = function(vault) {
+	vault.cards.push(new Card());
+    }
+    this.serialize = function() {
+    	this.serial = angular.toJson(this.vaults.filter(function(v) { return v.locked; }).map(function(v) { return v.toResource(); }), true);
+    }
+    this.save = function(vault) {
+	var resource = vault.toResource();
+	console.log(resource);
+	resource.$save({wallet_id: resource.wallet_id});
+	vault.id = resource.wallet_id;
+    }
+    function vaultDetails(name, crypto, isNew) {
+	return { name: name || "Untitled",
+		 isNew: isNew,
+		 crypto: crypto,
+		 cryptos: Aes.versions };
+    }
+    this.editDetails = function(vault) {
+	var updateInfo = showModalDialog('<%= asset_path "create.html" %>', vaultDetails(vault.name, vault.crypto, false), "dialogwidth: 450; dialogheight: 300; ");
+	vault.update(updateInfo);
+    }
+    this.addVault = function() {
+	var vault = new Vault();
+	var creationInfo = showModalDialog("wallets/new", vaultDetails("Untitled", null, true), "dialogwidth: 450; dialogheight: 300; ");
+	if (creationInfo) {
+	    vault.update(creationInfo);
+	    this.vaults.push(vault);
+	}
+    }
+    this.remove = function(vault) {
+	this.vaults.splice(this.vaults.indexOf(vault),1);
+	if (vault.id) {
+	    Blob.destroy({ wallet_id: vault.id });
+	}
+    }
+    this.lock = function(vault) {
+	vault.lock();
+	self.$eval();
+    }
+    this.unlock = function(password, vault) {
+	Aes.precompute(password, vault, function() {
+	    var ptext = Aes.decrypt(vault);
+	    vault.unlock(ptext);
+	});
+    };
+}
+VaultsCtrl.$inject = ['Blob', 'Aes'];
+
+function DetailsCtrl() {
+    var args = window.dialogArguments || {name: 'fake', cryptos: ['old', 'new']};
+    this.name = args.name || "Untitled";
+    this.cryptos = args.cryptos;
+    this.crypto = args.crypto;
+    this.submit = args.isNew ? "Create" : "Save";
+    this.password = "";
+    this.confirm = "";
+    this.cancel = function() {
+	window.close();
+    }
+    this.createVault = function() {
+        if (this.password == this.confirm) {
+            window.returnValue = { name: this.name,
+				   password: this.password,
+				   crypto: this.crypto };
+	    console.log(window.returnValue);
+            window.close();
+        } else {
+            alert("Passwords do not match");
+        } 
+    }
+    document.getElementById("vaultName").value = args.name;
+    if (args.new) {
+        document.getElementById("createButton").value = "Create";
+    }
+}
+DetailsCtrl.$inject = [];
+
+function ViewCtrl(Vaults) {
+    this.data = Vaults.query();
+}
+ViewCtrl.$inject = ['Vaults'];

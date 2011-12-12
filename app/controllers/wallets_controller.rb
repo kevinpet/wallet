@@ -1,4 +1,6 @@
 class WalletsController < ApplicationController
+  before_filter :intercept_html_requests, :except => [:new, :edit]
+  layout nil
   def index
     @wallets = Wallet.all
     if (request.xhr?)
@@ -12,38 +14,39 @@ class WalletsController < ApplicationController
   end
 
   def new
-    @wallet = Wallet.new
+    render 'edit_dialog', :layout => false
   end
 
   def create
     @wallet = Wallet.new(params[:wallet])
-    if @wallet.save
-      if request.xhr?
-        render :json => @wallet
-      else
-        redirect_to @wallet, :notice => "Successfully created wallet."
-      end
-    else
-      render :action => 'new'
-    end
+    @wallet.save
+    render :json => @wallet
   end
 
   def edit
-    @wallet = Wallet.find(params[:id])
+    render 'edit_dialog', :layout => false
   end
 
   def update
     @wallet = Wallet.find(params[:id])
-    if @wallet.update_attributes(params[:wallet])
-      redirect_to @wallet, :notice  => "Successfully updated wallet."
-    else
-      render :action => 'edit'
-    end
+    @wallet.update_attributes(params[:wallet])
+    render :json => @wallet
   end
 
   def destroy
     @wallet = Wallet.find(params[:id])
     @wallet.destroy
-    redirect_to wallets_url, :notice => "Successfully destroyed wallet."
+    render :nothing => true
   end
+
+  private
+  def intercept_html_requests
+    render 'dynamic' if request.format == Mime::HTML
+  end
+
+  def handle_unverified_request
+    # reset_session
+    # render "#{Rails.root}/public/500.html", :status => 500, :layout => nil
+  end
+
 end

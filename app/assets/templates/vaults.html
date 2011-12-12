@@ -1,0 +1,56 @@
+<div>
+  <button ng:click="addVault()">New...</button>
+  <button ng:click="serialize()">Dump JSON</button>
+  <button ng:click="saveAll()">Save All</button>
+</div>
+<pre>
+  {{ serial }}
+</pre>
+<div ng:repeat="vault in vaults">
+  <ng:switch on="vault.locked">
+    <div ng:switch-when="true" class="vault locked">
+      <!-- LOCKED -->
+      <h2>{{ vault.id }}: {{ vault.name }}</h2>
+      <span ng:show="vault.status">{{vault.status}}</span>
+      <div class="controls">
+	<button ng:click="save(vault)">Save</button>
+	<button ng:click="remove(vault)">Delete</button>
+      </div>
+      <form ng:submit="unlock(password, vault);password='';">
+	<input type="password" name="password" size="30" />
+	<input type="submit" value="Unlock"/>
+      </form>
+    </div>
+    <div ng:switch-default class="vault unlocked">
+      <!-- OPENED -->
+      <h2>{{ vault.id }}: {{ vault.name }}</h2>
+      <span ng:show="vault.status">{{vault.status}}</span>
+      <div class="controls">
+	<button ng:click="addCard(vault)">Add Card...</button>
+	<button ng:click="editDetails(vault)">Settings...</button>
+	<button ng:click="lock(vault)">Lock</button>
+	<button ng:click="removeVault(vault)">Delete</button>
+      </div>
+      <div ng:show="vault.editing">
+	<input type="text" name="vault.name"/>
+	<ul>
+	  <li ng:show="vault.password">pass: {{ vault.password}}</li>
+	  <li ng:show="vault.iv">IV: {{ vault.iv}}</li>
+	  <li ng:show="vault.key">Key: {{ vault.key}}</li>
+	  <li ng:show="vault.salt">Salt: {{ vault.salt}}</li>
+	</ul>
+      </div>
+      <ul>
+	<li class="cards" ng:repeat="card in vault.cards">
+	  {{ card.name }}
+	  <button ng:click="card.toggle()">Show/Hide</button>
+	  <button ng:click="vault.remove(card)">Delete</button>
+	  <div ng:show="card.expanded">
+	    <input name="card.name"/><br/>
+	    <textarea name="card.details" rows="4" columns="30"></textarea>
+	  </div>
+	</li>
+      </ul>
+    </div>
+  </ng:switch>
+</div>
