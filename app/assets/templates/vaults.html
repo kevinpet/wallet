@@ -10,7 +10,7 @@
   <ng:switch on="vault.locked">
     <div ng:switch-when="true" class="vault locked">
       <!-- LOCKED -->
-      <h2>{{ vault.id }}: {{ vault.name }}</h2>
+      <h2>{{ vault.resource.id }}: {{ vault.resource.name }}</h2>
       <span ng:show="vault.status">{{vault.status}}</span>
       <div class="controls">
 	<button ng:click="save(vault)">Save</button>
@@ -23,22 +23,13 @@
     </div>
     <div ng:switch-default class="vault unlocked">
       <!-- OPENED -->
-      <h2>{{ vault.id }}: {{ vault.name }}</h2>
+      <h2>{{ vault.resource.id }}: {{ vault.resource.name }}</h2>
       <span ng:show="vault.status">{{vault.status}}</span>
       <div class="controls">
 	<button ng:click="addCard(vault)">Add Card...</button>
 	<button ng:click="editDetails(vault)">Settings...</button>
 	<button ng:click="lock(vault)">Lock</button>
 	<button ng:click="removeVault(vault)">Delete</button>
-      </div>
-      <div ng:show="vault.editing">
-	<input type="text" name="vault.name"/>
-	<ul>
-	  <li ng:show="vault.password">pass: {{ vault.password}}</li>
-	  <li ng:show="vault.iv">IV: {{ vault.iv}}</li>
-	  <li ng:show="vault.key">Key: {{ vault.key}}</li>
-	  <li ng:show="vault.salt">Salt: {{ vault.salt}}</li>
-	</ul>
       </div>
       <ul>
 	<li class="cards" ng:repeat="card in vault.cards">

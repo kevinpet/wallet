@@ -11,7 +11,7 @@
 	<input id="password" name="password"/><br/>
 	<label name="confirm">Confirm</label>
 	<input id="confirm" name="confirm"/><br/>
-	<select name="crypto">
+	<select name="crypto" ng:required="true">
 	  <option ng:repeat="c in cryptos">{{ c }}</option>
 	</select>
 	<br/>

@@ -51,12 +51,12 @@ angular.service('Aes', function() {
 	console.log(desc + ": " + bytes);
     }
     function precompute(password, vault, callback, keyRounds, ivRounds) {
-	if (!vault.salt) {
+	if (!vault.resource.salt) {
 	    var salt1 = cryptoHelpers.getRandom(0, 2147483647);
 	    var salt2 = cryptoHelpers.getRandom(0, 2147483647);
-	    vault.salt = cryptoHelpers.toHex(salt1) + cryptoHelpers.toHex(salt2);
+	    vault.resource.salt = cryptoHelpers.toHex(salt1) + cryptoHelpers.toHex(salt2);
 	}
-	get_key_and_iv(password, vault.salt, vault, function(k, iv) {
+	get_key_and_iv(password, vault.resource.salt, vault, function(k, iv) {
 	    vault.key = k;
 	    vault.iv = iv;
 	    (callback || angular.noop)(k, iv);
@@ -76,9 +76,9 @@ angular.service('Aes', function() {
 	    return l;
 	})(),
 	precompute: function(password, vault, callback) {
-	    var v = VERSIONS[vault.crypto || 'aesWeak'];
+	    var v = VERSIONS[vault.resource.crypto || 'aesWeak'];
 	    if (!v) {
-		throw new Error("Unsupported encryption version " + vault.crypto);
+		throw new Error("Unsupported encryption version " + vault.resource.crypto);
 	    }
 	    return precompute(password, vault, callback, v.keyRounds, v.ivRounds);
 	},
@@ -92,7 +92,7 @@ angular.service('Aes', function() {
 	    return cryptoHelpers.toHex(ctext);
 	},
 	decrypt: function (vault) {
-	    var bytes = cryptoHelpers.toNumbers(vault.ctext);
+	    var bytes = cryptoHelpers.toNumbers(vault.resource.ctext);
 	    var ptext = slowAES.decrypt(bytes, MODE, vault.key, vault.iv);
 	    var decoded = cryptoHelpers.convertByteArrayToString(ptext);
 	    return angular.fromJson(decoded);
@@ -101,10 +101,9 @@ angular.service('Aes', function() {
 });
 
 angular.service('Blob', function($resource) {
-    
-    return $resource('/wallets/:wallet_id', {}, {
+    return $resource('/wallets/:walletId', {walletId: '@id'}, {
 	create: { method: 'POST' },
-	index: { method: 'GET', params: {wallet_id: ''}, isArray: true },
+	index: { method: 'GET', params: {walletId: ''}, isArray: true },
 	update: { method: 'PUT' },
 	destroy: { method: 'DELETE' }
     });

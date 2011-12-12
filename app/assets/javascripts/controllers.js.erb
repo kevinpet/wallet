@@ -1,7 +1,7 @@
 'use strict';
 
 function VaultsCtrl(Blob, Aes) {
-    var Card = function(json) {
+    function Card(json) {
 	if (json) {
 	    this.id = json.id;
 	    this.name = json.name;
@@ -25,36 +25,23 @@ function VaultsCtrl(Blob, Aes) {
 	};
 	return card;
     }
-    var Vault = function(json) {
-	if (json) {
-	    this.id = json.id;
-	    this.name = json.name;
-	    this.salt = json.salt;
-	    this.ctext = json.ctext;
-	    this.crypto = json.crypto;
+    var Vault = function(resource) {
+	if (resource) {
+	    this.resource = resource;
 	} else {
 	    this.cards = [];
 	    this.locked = false;
-	    this.editing = true;
+	    this.resource = new Blob();
 	}
-    }
-    Vault.prototype.toResource = function() {
-	return new Blob({ wallet_id: this.id,
-			  name: this.name,
-			  salt: this.salt,
-			  ctext: this.ctext,
-			  crypto: this.crypto
-			});
     }
     Vault.prototype.name = "Untitled";
     Vault.prototype.locked = true;
-    Vault.prototype.editing = false;
     Vault.prototype.lock = function() {
 	if (this.locked) {
 	    return;
 	}
 	this.locked = true;
-	this.ctext = Aes.encrypt(this);
+	this.resource.ctext = Aes.encrypt(this);
 	this.cards = null;
 	this.progress(null);
     };
@@ -63,15 +50,12 @@ function VaultsCtrl(Blob, Aes) {
 	self.$eval();
     };
     Vault.prototype.setPassword = function(password) {
-	this.salt = null;
+	this.resource.salt = null;
 	this.key = null;
 	this.iv = null;
 	this.password = password;
 	Aes.precompute(password, this);
 	this.progress(null);
-    }
-    Vault.prototype.toggle = function() {
-	this.editing = !this.editing;
     }
     Vault.prototype.unlock = function(ptext) {
 	if (!this.locked) {
@@ -80,7 +64,7 @@ function VaultsCtrl(Blob, Aes) {
 	this.locked = false;
 	this.status = null;
 	this.cards = (ptext || []).map(function(c) { return new Card(c); });
-	this.ctext = null;
+	this.resource.ctext = null;
 	this.progress(null);
     };
     Vault.prototype.update = function(info) {
@@ -88,8 +72,8 @@ function VaultsCtrl(Blob, Aes) {
 	    return;
 	}
 	console.log("Update info was: " + angular.toJson(info));
-	this.name = info.name;
-	this.crypto = info.crypto;
+	this.resource.name = info.name;
+	this.resource.crypto = info.crypto;
 	this.setPassword(info.password);
     };
     var self = this;
@@ -103,13 +87,18 @@ function VaultsCtrl(Blob, Aes) {
 	vault.cards.push(new Card());
     }
     this.serialize = function() {
-    	this.serial = angular.toJson(this.vaults.filter(function(v) { return v.locked; }).map(function(v) { return v.toResource(); }), true);
+    	this.serial = angular.toJson(this.vaults.filter(function(v) { return v.locked; }).map(function(v) { return v.resource; }), true);
     }
     this.save = function(vault) {
-	var resource = vault.toResource();
-	console.log(resource);
-	resource.$save({wallet_id: resource.wallet_id});
-	vault.id = resource.wallet_id;
+	console.log("Saving...");
+	console.log(vault);
+	if (vault.resource.id) {
+	    console.log("via update");
+	    vault.resource.$update();
+	} else {
+	    console.log("via create");
+	    vault.resource.$create();
+	}
     }
     function vaultDetails(name, crypto, isNew) {
 	return { name: name || "Untitled",
@@ -118,7 +107,7 @@ function VaultsCtrl(Blob, Aes) {
 		 cryptos: Aes.versions };
     }
     this.editDetails = function(vault) {
-	var updateInfo = showModalDialog('<%= asset_path "create.html" %>', vaultDetails(vault.name, vault.crypto, false), "dialogwidth: 450; dialogheight: 300; ");
+	var updateInfo = showModalDialog("wallets/" + vault.id + "/edit", vaultDetails(vault.resource.name, vault.resource.crypto, false), "dialogwidth: 450; dialogheight: 300; ");
 	vault.update(updateInfo);
     }
     this.addVault = function() {
@@ -131,9 +120,8 @@ function VaultsCtrl(Blob, Aes) {
     }
     this.remove = function(vault) {
 	this.vaults.splice(this.vaults.indexOf(vault),1);
-	if (vault.id) {
-	    Blob.destroy({ wallet_id: vault.id });
-	}
+	vault.resource.$delete();
+//	Blob.destroy(vault.resource.id);
     }
     this.lock = function(vault) {
 	vault.lock();

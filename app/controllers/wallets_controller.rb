@@ -1,6 +1,7 @@
 class WalletsController < ApplicationController
   before_filter :intercept_html_requests, :except => [:new, :edit]
   layout nil
+  respond_to :json
   def index
     @wallets = Wallet.all
     if (request.xhr?)
@@ -18,6 +19,9 @@ class WalletsController < ApplicationController
   end
 
   def create
+    if params[:wallet][:id]
+      raise "Wallet already has id, but calling create!"
+    end
     @wallet = Wallet.new(params[:wallet])
     @wallet.save
     render :json => @wallet
@@ -28,6 +32,7 @@ class WalletsController < ApplicationController
   end
 
   def update
+    params[:wallet].delete(:id)
     @wallet = Wallet.find(params[:id])
     @wallet.update_attributes(params[:wallet])
     render :json => @wallet
