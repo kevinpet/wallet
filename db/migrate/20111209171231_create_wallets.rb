@@ -4,7 +4,7 @@ class CreateWallets < ActiveRecord::Migration
       t.string :name
       t.string :salt
       t.string :crypto
-      t.text :ctext, :limit => 1.megabytes
+      t.text :ctext
 
       t.timestamps
     end
