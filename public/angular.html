@@ -1,0 +1,17 @@
+<!doctype html>
+<html xmlns:ng="http://angularjs.org/">
+<head>
+  <meta charset="utf-8">
+  <title>Angular JS Min Test Page</title>
+</head>
+<body ng:controller="MinCtrl">
+  <input name="data"/>
+  {{ data }}
+  <script>
+    function MinCtrl() {
+      this.data = "edit me";
+    }
+  </script>
+  <script src="/javascripts/angular.min.js" ng:autobind></script>
+</body>
+</html>
