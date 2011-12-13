@@ -71,7 +71,6 @@ function VaultsCtrl(Blob, Aes) {
 	if (!info) {
 	    return;
 	}
-	console.log("Update info was: " + angular.toJson(info));
 	this.resource.name = info.name;
 	this.resource.crypto = info.crypto;
 	this.setPassword(info.password);
@@ -90,13 +89,9 @@ function VaultsCtrl(Blob, Aes) {
     	this.serial = angular.toJson(this.vaults.filter(function(v) { return v.locked; }).map(function(v) { return v.resource; }), true);
     }
     this.save = function(vault) {
-	console.log("Saving...");
-	console.log(vault);
 	if (vault.resource.id) {
-	    console.log("via update");
 	    vault.resource.$update();
 	} else {
-	    console.log("via create");
 	    vault.resource.$create();
 	}
     }
@@ -121,7 +116,6 @@ function VaultsCtrl(Blob, Aes) {
     this.remove = function(vault) {
 	this.vaults.splice(this.vaults.indexOf(vault),1);
 	vault.resource.$delete();
-//	Blob.destroy(vault.resource.id);
     }
     this.lock = function(vault) {
 	vault.lock();
@@ -137,7 +131,7 @@ function VaultsCtrl(Blob, Aes) {
 VaultsCtrl.$inject = ['Blob', 'Aes'];
 
 function DetailsCtrl() {
-    var args = window.dialogArguments || {name: 'fake', cryptos: ['old', 'new']};
+    var args = window.dialogArguments;
     this.name = args.name || "Untitled";
     this.cryptos = args.cryptos;
     this.crypto = args.crypto;
@@ -152,7 +146,6 @@ function DetailsCtrl() {
             window.returnValue = { name: this.name,
 				   password: this.password,
 				   crypto: this.crypto };
-	    console.log(window.returnValue);
             window.close();
         } else {
             alert("Passwords do not match");
@@ -164,8 +157,3 @@ function DetailsCtrl() {
     }
 }
 DetailsCtrl.$inject = [];
-
-function ViewCtrl(Vaults) {
-    this.data = Vaults.query();
-}
-ViewCtrl.$inject = ['Vaults'];

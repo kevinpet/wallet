@@ -9,7 +9,6 @@ angular.service('Config', function($route, $location, $window, $xhr) {
     $xhr.defaults.headers['delete']['X-CSRF-Token'] = token;
 
     $route.when('/vaults', {template: '<%= asset_path "vaults.html" %>', controller: VaultsCtrl});
-    $route.when('/view', {template: '<%= asset_path "viewer.html"%>', controller: ViewCtrl});
 
     var self = this;
 

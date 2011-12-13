@@ -25,6 +25,11 @@ Hippocket::Application.configure do
   # Do not compress assets
   config.assets.compress = false
 
+  # make these true to simulate production
+  #config.assets.compile = true
+  #config.assets.digest = true
+  #config.assets.compress = true
+
   # Expands the lines which load the assets
   config.assets.debug = true
 end
