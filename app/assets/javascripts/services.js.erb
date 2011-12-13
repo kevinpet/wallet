@@ -1,27 +1,4 @@
-
-angular.service('Config', function($route, $location, $window, $xhr) {
-    $xhr.defaults.headers.post['Content-Type'] = 'application/json';
-    $xhr.defaults.headers.put['Content-Type'] = 'application/json';
-
-    var token = $("meta[name='csrf-token']").attr("content");
-    $xhr.defaults.headers.post['X-CSRF-Token'] = token;
-    $xhr.defaults.headers.put['X-CSRF-Token'] = token;
-    $xhr.defaults.headers['delete']['X-CSRF-Token'] = token;
-
-    $route.when('/vaults', {template: '<%= asset_path "vaults.html" %>', controller: VaultsCtrl});
-
-    var self = this;
-
-    $route.onChange(function() {
-	if ($location.hash === '') {
-	    $location.updateHash('/vaults');
-	    self.$eval();
-	} else {
-	    $route.current.scope.params = $route.current.params;
-	    $window.scrollTo(0,0);
-	}
-    });
-}, {inject: ['$route', '$location', '$window', '$xhr'], $eager: true})
+'use strict';
 
 angular.service('Aes', function() {
     var KEY_SIZE = 256 / 8;
