@@ -1,18 +1,25 @@
 source 'http://rubygems.org'
 
 gem 'rails', '3.1.0'
+gem "bcrypt-ruby", :require => "bcrypt"
+gem 'jquery-rails'
 
-# Bundle edge Rails instead:
-# gem 'rails',     :git => 'git://github.com/rails/rails.git'
-
-gem 'sqlite3'
-
+group :development, :test do
+  gem 'sqlite3'
+end
+  
 group :development do
   gem 'nifty-generators'
 end
 
+group :test do
+  gem 'turn', :require => false
+  gem 'mocha'
+end
+
 group :production do
-  gem 'activerecord-postgresql-adapter'
+  gem 'pg'
+#  gem 'activerecord-postgresql-adapter'
 end
 
 # Gems used only for assets and not required
@@ -23,8 +30,6 @@ group :assets do
   gem 'uglifier'
 end
 
-gem 'jquery-rails'
-
 # Use unicorn as the web server
 # gem 'unicorn'
 
@@ -33,10 +38,3 @@ gem 'jquery-rails'
 
 # To use debugger
 # gem 'ruby-debug19', :require => 'ruby-debug'
-
-group :test do
-  # Pretty printed test output
-  gem 'turn', :require => false
-end
-gem "bcrypt-ruby", :require => "bcrypt"
-gem "mocha", :group => :test
