@@ -100,7 +100,7 @@ function VaultsCtrl(Blob, Aes) {
 	this.setPassword(info.password);
     };
     var self = this;
-    Blob.query({}, function(r, hdrs) {
+    Blob.index(function(r, hdrs) {
 	window._loaded = r;
 	var mapped = r.map(function(j) { return new Vault(j); });
 	window._mapped = mapped;

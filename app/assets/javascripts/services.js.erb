@@ -15,8 +15,8 @@ angular.service('Aes', function() {
 	}
     }
     function get_key_and_iv(password, salt, vault, callback, keyRounds, ivRounds) {
-	pbkdf2_key = new PBKDF2(password, salt, keyRounds, KEY_SIZE);
-	pbkdf2_iv = new PBKDF2(password, salt, ivRounds, BLOCK_SIZE);
+	var pbkdf2_key = new PBKDF2(password, salt, keyRounds, KEY_SIZE);
+	var pbkdf2_iv = new PBKDF2(password, salt, ivRounds, BLOCK_SIZE);
 	pbkdf2_key.deriveKey(progress("key", vault), function(key) {
 	    pbkdf2_iv.deriveKey(progress("iv", vault), function(iv) {
 		callback(key, iv);
