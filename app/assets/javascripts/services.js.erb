@@ -74,7 +74,7 @@ angular.service('Aes', function() {
 	    return angular.fromJson(decoded);
 	}
     };
-});
+}, {$inject: []});
 
 angular.service('Blob', function($resource) {
     return $resource('/wallets/:walletId', {walletId: '@id'}, {
@@ -83,4 +83,4 @@ angular.service('Blob', function($resource) {
 	update: { method: 'PUT' },
 	destroy: { method: 'DELETE' }
     });
-}, {inject: ['$resource']});
+}, {$inject: ['$resource']});
