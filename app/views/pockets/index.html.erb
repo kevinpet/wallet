@@ -1,0 +1,21 @@
+<% title "Pockets" %>
+
+<table>
+  <tr>
+    <th>User</th>
+    <th>Wallet</th>
+    <th>Access</th>
+  </tr>
+  <% for pocket in @pockets %>
+    <tr>
+      <td><%= pocket.user_id %></td>
+      <td><%= pocket.wallet_id %></td>
+      <td><%= pocket.access %></td>
+      <td><%= link_to "Show", pocket %></td>
+      <td><%= link_to "Edit", edit_pocket_path(pocket) %></td>
+      <td><%= link_to "Destroy", pocket, :confirm => 'Are you sure?', :method => :delete %></td>
+    </tr>
+  <% end %>
+</table>
+
+<p><%= link_to "New Pocket", new_pocket_path %></p>

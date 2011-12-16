@@ -1,9 +1,10 @@
 class WalletsController < ApplicationController
+  before_filter :login_required
   before_filter :intercept_html_requests, :except => [:new, :edit]
   layout nil
   respond_to :json
   def index
-    @wallets = Wallet.all
+    @wallets = current_user.wallets
     if (request.xhr?)
       render :json => @wallets
       return
@@ -24,6 +25,7 @@ class WalletsController < ApplicationController
     end
     @wallet = Wallet.new(params[:wallet])
     @wallet.save
+    
     render :json => @wallet
   end
 
@@ -50,8 +52,8 @@ class WalletsController < ApplicationController
   end
 
   def handle_unverified_request
-    # reset_session
-    # render "#{Rails.root}/public/500.html", :status => 500, :layout => nil
+    reset_session
+    render "#{Rails.root}/public/500.html", :status => 500, :layout => nil
   end
 
 end

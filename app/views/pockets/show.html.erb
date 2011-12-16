@@ -1,0 +1,20 @@
+<% title "Pocket" %>
+
+<p>
+  <strong>User:</strong>
+  <%= @pocket.user_id %>
+</p>
+<p>
+  <strong>Wallet:</strong>
+  <%= @pocket.wallet_id %>
+</p>
+<p>
+  <strong>Access:</strong>
+  <%= @pocket.access %>
+</p>
+
+<p>
+  <%= link_to "Edit", edit_pocket_path(@pocket) %> |
+  <%= link_to "Destroy", @pocket, :confirm => 'Are you sure?', :method => :delete %> |
+  <%= link_to "View All", pockets_path %>
+</p>

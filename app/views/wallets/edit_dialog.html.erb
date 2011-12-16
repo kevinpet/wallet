@@ -19,7 +19,8 @@
       </form>
       <button ng:click="cancel()">Cancel</button>
     </div>
+    <%= javascript_include_tag :application -%>
     <script src="/javascripts/angular.min.js" ng:autobind></script>
-    <%= javascript_include_tag "application" -%>
+    <%= javascript_include_tag :wallet -%>
   </body>
 </html>

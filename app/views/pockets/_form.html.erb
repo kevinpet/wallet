@@ -1,0 +1,16 @@
+<%= form_for @pocket do |f| %>
+  <%= f.error_messages %>
+  <p>
+    <%= f.label :user_id %><br />
+    <%= f.number_field :user_id %>
+  </p>
+  <p>
+    <%= f.label :wallet_id %><br />
+    <%= f.number_field :wallet_id %>
+  </p>
+  <p>
+    <%= f.label :access %><br />
+    <%= f.text_field :access %>
+  </p>
+  <p><%= f.submit %></p>
+<% end %>

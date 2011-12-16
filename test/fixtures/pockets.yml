@@ -1,0 +1,9 @@
+one:
+  user: alice
+  wallet: one
+  access: rw
+
+two:
+  user: alice
+  wallet: two
+  access: ro

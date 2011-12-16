@@ -1,4 +1,9 @@
 Hippocket::Application.routes.draw do
+  get "welcome/home", :as => :home
+  get "welcome/about", :as => :about
+
+  resources :pockets
+
   resources :wallets
 
   match 'user/edit' => 'users#edit', :as => :edit_current_user
@@ -9,7 +14,7 @@ Hippocket::Application.routes.draw do
   match 'login' => 'sessions#new', :as => :login
   resources :sessions
 
-  root :to => 'wallets#index'
+  root :to => 'welcome#home'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

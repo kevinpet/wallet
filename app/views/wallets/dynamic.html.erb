@@ -7,14 +7,13 @@
   <%= csrf_meta_tag %>
 </head>
 <body ng:controller="AppCtrl">
-  JS Wallet
-  <ul class="menu">
-    <li><a href="#/vaults">Vaults</a></li>
-  </ul>
-
+  <%= render :partial => 'shared/header' %>
+  <div id="container">
   <ng:view></ng:view>
+  </div>
+  <%= javascript_include_tag :application -%>
   <script src="/javascripts/angular.min.js" ng:autobind></script>
-  <%= javascript_include_tag "application" -%>
-  <%= javascript_include_tag "crypto" -%>
+  <%= javascript_include_tag :crypto -%>
+  <%= javascript_include_tag :wallet -%>
 </body>
 </html>
