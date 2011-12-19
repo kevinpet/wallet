@@ -52,6 +52,9 @@ function VaultsCtrl(Blob, Aes) {
     var Vault = function(resource) {
 	if (resource) {
 	    this.resource = resource;
+	    if (!this.resource.ctext) {
+		this.unlock();
+	    }
 	} else {
 	    this.cards = [];
 	    this.locked = false;
@@ -86,7 +89,6 @@ function VaultsCtrl(Blob, Aes) {
 	    return;
 	}
 	this.locked = false;
-	this.status = null;
 	this.cards = (ptext || []).map(function(c) { return new Card(c); });
 	this.resource.ctext = null;
 	this.progress(null);

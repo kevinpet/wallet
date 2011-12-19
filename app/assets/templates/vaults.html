@@ -10,7 +10,7 @@
   <ng:switch on="vault.locked">
     <div ng:switch-when="true" class="vault locked">
       <!-- LOCKED -->
-      <h2>{{ vault.resource.id }}: {{ vault.resource.name }}</h2>
+      <h2>{{ vault.resource.name }}</h2>
       <span ng:show="vault.status">{{vault.status}}</span>
       <div class="controls">
 	<button ng:click="save(vault)">Save</button>
@@ -23,7 +23,7 @@
     </div>
     <div ng:switch-default class="vault unlocked">
       <!-- OPENED -->
-      <h2>{{ vault.resource.id }}: {{ vault.resource.name }}</h2>
+      <h2>{{ vault.resource.name }}</h2>
       <span ng:show="vault.status">{{vault.status}}</span>
       <div class="controls">
 	<button ng:click="addCard(vault)">Add Card...</button>

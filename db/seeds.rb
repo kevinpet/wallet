@@ -35,3 +35,7 @@ Pocket.create(user: alice,
 Pocket.create(user: bob,
               wallet: w1,
               access: :ro)
+Pocket.create(user: bob,
+              wallet: w3,
+              access: :rw)
+
