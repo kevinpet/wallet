@@ -25,7 +25,8 @@ class WalletsController < ApplicationController
     end
     @wallet = Wallet.new(params[:wallet])
     @wallet.save
-    
+    pocket = Pocket.new user: current_user, wallet: @wallet, access: :rw
+    pocket.save
     render :json => @wallet
   end
 
