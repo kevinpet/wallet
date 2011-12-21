@@ -1,10 +1,18 @@
 class PocketsController < ApplicationController
+
+  before_filter :admin_required
+
   def index
-    @pockets = Pocket.all
+    @pockets = current_user.pockets
   end
 
   def show
-    @pocket = Pocket.find(params[:id])
+    pocket = Pocket.find(params[:id])
+    if pocket.user == current_user
+      @pocket = pocket
+    else
+      @pocket = nil
+    end
   end
 
   def new
