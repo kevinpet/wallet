@@ -58,13 +58,12 @@ angular.service('Aes', function() {
 	    }
 	    return precompute(password, vault, callback, v.keyRounds, v.ivRounds);
 	},
-	encrypt: function(vault) {
-	    if (!(vault.key && vault.iv)) {
-		throw new Error("Need key and iv already calculated, key was " + vault.key + ", iv was " + vault.iv);
+	encrypt: function(key, iv, ptext) {
+	    if (!(key && iv)) {
+		throw new Error("Need key and iv already calculated, key was " + key + ", iv was " + iv);
 	    }
-	    var ptext = angular.toJson(vault.cards.map(function(c) { return c.toSerial() }));
 	    var bytes = cryptoHelpers.convertStringToByteArray(ptext);
-	    var ctext = slowAES.encrypt(bytes, MODE, vault.key, vault.iv);
+	    var ctext = slowAES.encrypt(bytes, MODE, key, iv);
 	    return cryptoHelpers.toHex(ctext);
 	},
 	decrypt: function (vault) {
