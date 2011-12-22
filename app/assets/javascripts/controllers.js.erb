@@ -36,6 +36,7 @@ function VaultsCtrl(Blob, Aes) {
 	    this.expanded = true;
 	}
     }
+    Card.prototype.deleted = false;
     Card.prototype.toggle = function() {
 	this.expanded = !this.expanded;
     }
@@ -75,6 +76,9 @@ function VaultsCtrl(Blob, Aes) {
     Vault.prototype.progress = function (status) {
 	this.status = status;
 	self.$eval();
+    };
+    Vault.prototype.remove = function(card) {
+	this.cards.splice(this.cards.indexOf(card),1);
     };
     Vault.prototype.setPassword = function(password) {
 	this.resource.salt = null;

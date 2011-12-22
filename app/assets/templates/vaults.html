@@ -29,17 +29,26 @@
 	<button ng:click="addCard(vault)">Add Card...</button>
 	<button ng:click="editDetails(vault)">Settings...</button>
 	<button ng:click="lock(vault)">Lock</button>
-	<button ng:click="removeVault(vault)">Delete</button>
+	<button ng:click="remove(vault)">Delete</button>
       </div>
       <ul>
 	<li class="cards" ng:repeat="card in vault.cards">
-	  {{ card.name }}
-	  <button ng:click="card.toggle()">Show/Hide</button>
-	  <button ng:click="vault.remove(card)">Delete</button>
-	  <div ng:show="card.expanded">
-	    <input name="card.name"/><br/>
-	    <textarea name="card.details" rows="4" columns="30"></textarea>
+	  <ng:switch on="card.deleted">
+	  <div ng:switch-when="true">
+	    <strike>{{ card.name }}</strike>
+	    <button ng:click="vault.remove(card)">Purge Deleted</button>
+	    <button ng:click="card.deleted = false">Restore</button>
 	  </div>
+	  <div ng:switch-default>
+	    {{ card.name }}
+	    <button ng:click="card.toggle()">Show/Hide</button>
+	    <button ng:click="card.deleted = true">Delete</button>
+	    <div ng:show="card.expanded">
+	      <input name="card.name"/><br/>
+	      <textarea name="card.details" rows="4" columns="30"></textarea>
+	    </div>
+	  </div>
+	  </ng:switch>
 	</li>
       </ul>
     </div>
