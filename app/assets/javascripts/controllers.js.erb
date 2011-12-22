@@ -69,7 +69,7 @@ function VaultsCtrl(Blob, Aes) {
 	    return;
 	}
 	this.locked = true;
-	var ptext = angular.toJson(this.cards.map(function(c) { return c.toSerial() }));
+	var ptext = angular.toJson(this.cards.filter(function(c) { return !c.deleted }).map(function(c) { return c.toSerial() }));
 	this.resource.ctext = Aes.encrypt(this.key, this.iv, ptext);
 	this.cards = null;
 	this.progress(null);
