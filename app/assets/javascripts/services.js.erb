@@ -66,11 +66,15 @@ angular.service('Aes', function() {
 	    var ctext = slowAES.encrypt(bytes, MODE, key, iv);
 	    return cryptoHelpers.toHex(ctext);
 	},
-	decrypt: function (vault) {
-	    var bytes = cryptoHelpers.toNumbers(vault.resource.ctext);
-	    var ptext = slowAES.decrypt(bytes, MODE, vault.key, vault.iv);
+	decrypt: function (key, iv, ctext) {
+	    var bytes = cryptoHelpers.toNumbers(ctext);
+	    var ptext = slowAES.decrypt(bytes, MODE, key, iv);
 	    var decoded = cryptoHelpers.convertByteArrayToString(ptext);
-	    return angular.fromJson(decoded);
+	    try {
+		return angular.fromJson(decoded);
+	    } catch (e) {
+		return null;
+	    }
 	}
     };
 }, {$inject: []});

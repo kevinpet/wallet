@@ -89,12 +89,16 @@ function VaultsCtrl(Blob, Aes) {
 	Aes.precompute(password, this);
 	this.progress(null);
     }
-    Vault.prototype.unlock = function(ptext) {
+    Vault.prototype.unlock = function(contents) {
 	if (!this.locked) {
 	    return;
 	}
+	if (!contents) {
+	    this.progress("Incorrect password, please try again");
+	    return;
+	}
 	this.locked = false;
-	this.cards = (ptext || []).map(function(c) { return new Card(c); });
+	this.cards = contents.map(function(c) { return new Card(c); });
 	this.resource.ctext = null;
 	this.progress(null);
     };
@@ -154,7 +158,7 @@ function VaultsCtrl(Blob, Aes) {
     }
     this.unlock = function(password, vault) {
 	Aes.precompute(password, vault, function() {
-	    var ptext = Aes.decrypt(vault);
+	    var ptext = Aes.decrypt(vault.key, vault.iv, vault.resource.ctext);
 	    vault.unlock(ptext);
 	});
     };
