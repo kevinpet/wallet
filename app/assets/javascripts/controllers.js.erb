@@ -62,7 +62,6 @@ function VaultsCtrl(Blob, Aes) {
 	    this.resource = new Blob();
 	}
     }
-    Vault.prototype.name = "Untitled";
     Vault.prototype.locked = true;
     Vault.prototype.lock = function() {
 	if (this.locked) {
@@ -149,8 +148,10 @@ function VaultsCtrl(Blob, Aes) {
 	}
     }
     this.remove = function(vault) {
-	this.vaults.splice(this.vaults.indexOf(vault),1);
-	vault.resource.$delete();
+	if (confirm("Permanently remove '" + vault.resource.name + "'?")) {
+	    this.vaults.splice(this.vaults.indexOf(vault),1);
+	    vault.resource.$delete();
+	}
     }
     this.lock = function(vault) {
 	vault.lock();
