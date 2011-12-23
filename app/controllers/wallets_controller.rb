@@ -42,8 +42,14 @@ class WalletsController < ApplicationController
   end
 
   def destroy
-    @wallet = Wallet.find(params[:id])
-    @wallet.destroy
+    wallet = Wallet.find(params[:id])
+    pocket = Pocket.where({user_id: current_user.id, wallet_id: wallet.id}).first
+    if (pocket)
+      pocket.destroy
+      if wallet.pockets.empty?
+        wallet.destroy
+      end
+    end
     render :nothing => true
   end
 
