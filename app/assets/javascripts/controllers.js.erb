@@ -130,7 +130,7 @@ function VaultsCtrl(Blob, Aes) {
     function vaultDetails(name, crypto, isNew) {
 	return { name: name || "Untitled",
 		 isNew: isNew,
-		 crypto: crypto,
+		 crypto: crypto || "aesStandard",
 		 cryptos: Aes.versions };
     }
     self.editDetails = function(vault) {
@@ -174,6 +174,7 @@ function VaultsCtrl(Blob, Aes) {
 VaultsCtrl.$inject = ['Blob', 'Aes'];
 
 function DetailsCtrl() {
+    var self = this;
     var args = window.dialogArguments;
     this.name = args.name || "Untitled";
     this.cryptos = args.cryptos;
@@ -185,10 +186,10 @@ function DetailsCtrl() {
 	window.close();
     }
     this.createVault = function() {
-        if (this.password == this.confirm) {
-            window.returnValue = { name: this.name,
-				   password: this.password,
-				   crypto: this.crypto };
+        if (self.password == self.confirm) {
+            window.returnValue = { name: self.name,
+				   password: self.password,
+				   crypto: self.crypto };
             window.close();
         } else {
             alert("Passwords do not match");

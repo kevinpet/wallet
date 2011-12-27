@@ -5,20 +5,21 @@
   <body>
     <div ng:controller="DetailsCtrl">
       <form ng:submit="createVault()">
-	<label name="name">Vault name</label>
+	<label name="name">Name this collection:</label>
 	<input id="vaultName" name="name"/><br/>
-	<label name="password">Password</label>
+	<label name="password">Password:</label>
 	<input id="password" name="password"/><br/>
-	<label name="confirm">Confirm</label>
+	<label name="confirm">Confirm:</label>
 	<input id="confirm" name="confirm"/><br/>
-	<select name="crypto" ng:required="true">
-	  <option ng:repeat="c in cryptos">{{ c }}</option>
-	</select>
+	<label name="crypto">Encryption: </label>
+	<select name="crypto" ng:options="c for c in cryptos"></select>
 	<br/>
 	<input type="submit" name="submit"/>
       </form>
       <button ng:click="cancel()">Cancel</button>
     </div>
+    <p><strong>About passwords.</strong> Your data is only as secure as your password. Passphrases are the best, as illustrated in this cartoon.</p>
+    <a href="http://xkcd.com/936/" target="_blank"><img src="http://imgs.xkcd.com/comics/password_strength.png" height="300"></a>
     <%= javascript_include_tag :application -%>
     <script src="/javascripts/angular.min.js" ng:autobind></script>
     <%= javascript_include_tag :wallet -%>
