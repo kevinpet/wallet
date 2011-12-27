@@ -115,14 +115,12 @@ function VaultsCtrl(Blob, Aes) {
 	var mapped = r.map(function(j) { return new Vault(j); });
 	window._mapped = mapped;
 	self.vaults = mapped;
+	self.selected = self.vaults[0];
     });
-    this.addCard = function(vault) {
+    self.addCard = function(vault) {
 	vault.cards.push(new Card());
     }
-    this.serialize = function() {
-    	this.serial = angular.toJson(this.vaults.filter(function(v) { return v.locked; }).map(function(v) { return v.resource; }), true);
-    }
-    this.save = function(vault) {
+    self.save = function(vault) {
 	if (vault.resource.id) {
 	    vault.resource.$update();
 	} else {
@@ -135,29 +133,38 @@ function VaultsCtrl(Blob, Aes) {
 		 crypto: crypto,
 		 cryptos: Aes.versions };
     }
-    this.editDetails = function(vault) {
+    self.editDetails = function(vault) {
 	var updateInfo = showModalDialog("wallets/" + vault.id + "/edit", vaultDetails(vault.resource.name, vault.resource.crypto, false), "dialogwidth: 450; dialogheight: 300; ");
 	vault.update(updateInfo);
     }
-    this.addVault = function() {
+    self.addVault = function() {
 	var vault = new Vault();
 	var creationInfo = showModalDialog("wallets/new", vaultDetails("Untitled", null, true), "dialogwidth: 450; dialogheight: 300; ");
 	if (creationInfo) {
 	    vault.update(creationInfo);
-	    this.vaults.push(vault);
+	    self.vaults.push(vault);
+	    self.selected = vault;
 	}
     }
-    this.remove = function(vault) {
+    self.remove = function(vault) {
 	if (confirm("Permanently remove '" + vault.resource.name + "'?")) {
-	    this.vaults.splice(this.vaults.indexOf(vault),1);
+	    self.vaults.splice(self.vaults.indexOf(vault),1);
 	    vault.resource.$delete();
 	}
+	if (self.selected == vault) {
+	    self.selected = null;
+	}
     }
-    this.lock = function(vault) {
+    self.select = function(vault) {
+	self.selected.selected = false;
+	self.selected = vault;
+	vault.selected = true;
+    }
+    self.lock = function(vault) {
 	vault.lock();
 	self.$eval();
     }
-    this.unlock = function(password, vault) {
+    self.unlock = function(password, vault) {
 	Aes.precompute(password, vault, function() {
 	    var ptext = Aes.decrypt(vault.key, vault.iv, vault.resource.ctext);
 	    vault.unlock(ptext);
