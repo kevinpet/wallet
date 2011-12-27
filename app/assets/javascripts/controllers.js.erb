@@ -134,7 +134,7 @@ function VaultsCtrl(Blob, Aes) {
 		 cryptos: Aes.versions };
     }
     self.editDetails = function(vault) {
-	var updateInfo = showModalDialog("wallets/" + vault.id + "/edit", vaultDetails(vault.resource.name, vault.resource.crypto, false), "dialogwidth: 450; dialogheight: 300; ");
+	var updateInfo = showModalDialog("wallets/" + vault.id + "/edit", vaultDetails(vault.resource.name, vault.resource.crypto, false), "dialogwidth: 500; dialogheight: 500; ");
 	vault.update(updateInfo);
     }
     self.addVault = function() {

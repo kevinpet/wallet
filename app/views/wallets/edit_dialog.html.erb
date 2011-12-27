@@ -15,8 +15,8 @@
 	<select name="crypto" ng:options="c for c in cryptos"></select>
 	<br/>
 	<input type="submit" name="submit"/>
+	<button ng:click="cancel()">Cancel</button>
       </form>
-      <button ng:click="cancel()">Cancel</button>
     </div>
     <p><strong>About passwords.</strong> Your data is only as secure as your password. Passphrases are the best, as illustrated in this cartoon.</p>
     <a href="http://xkcd.com/936/" target="_blank"><img src="http://imgs.xkcd.com/comics/password_strength.png" height="300"></a>
