@@ -1,10 +1,22 @@
-<div>
-  <span ng:repeat="vault in vaults">
-      <button ng:click="select(vault)">{{ vault | titleVault }}</button>
-    </span>
-  <button ng:click="addVault()">New...</button>
-  <button ng:click="saveAll()">Save All</button>
+<div id="vault-selection">
+  <div ng:repeat="vault in vaults" ng:click="select(vault)" class="vault-button">
+    <ng:switch on="vault == selected">
+      <div ng:switch-when="true" class="select-border border-selected">
+	{{ vault.resource.name }}
+      </div>
+      <div ng:switch-default class="select-border border-normal">
+	{{ vault.resource.name }}
+      </div>
+    </ng:switch>
+  </div>
+  <div ng:click="addVault()" class="vault-button">
+    <div class="select-border border-normal">
+      New...
+    </div>
+  </div>
+  <div class="clear"></div>
 </div>
+<div ng:show="selected">
   <ng:switch on="selected.locked">
     <div ng:switch-when="true" class="vault locked">
       <h2>{{ selected | titleVault }}</h2>
@@ -32,22 +44,23 @@
       <ul>
 	<li class="cards" ng:repeat="card in selected.cards">
 	  <ng:switch on="card.deleted">
-	  <div ng:switch-when="true">
-	    <strike>{{ card.name }}</strike>
-	    <button ng:click="selected.remove(card)">Purge Deleted</button>
-	    <button ng:click="card.deleted = false">Restore</button>
-	  </div>
-	  <div ng:switch-default>
-	    {{ card.name }}
-	    <button ng:click="card.toggle()">Show/Hide</button>
-	    <button ng:click="card.deleted = true">Delete</button>
-	    <div ng:show="card.expanded">
-	      <input name="card.name"/><br/>
-	      <textarea name="card.details" rows="4" columns="30"></textarea>
+	    <div ng:switch-when="true">
+	      <strike>{{ card.name }}</strike>
+	      <button ng:click="selected.remove(card)">Purge Deleted</button>
+	      <button ng:click="card.deleted = false">Restore</button>
 	    </div>
-	  </div>
+	    <div ng:switch-default>
+	      {{ card.name }}
+	      <button ng:click="card.toggle()">Show/Hide</button>
+	      <button ng:click="card.deleted = true">Delete</button>
+	      <div ng:show="card.expanded">
+		<input name="card.name"/><br/>
+		<textarea name="card.details" rows="4" columns="30"></textarea>
+	      </div>
+	    </div>
 	  </ng:switch>
 	</li>
       </ul>
     </div>
+  </ng:switch>
 </div>

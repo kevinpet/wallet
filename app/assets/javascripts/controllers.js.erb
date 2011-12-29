@@ -115,7 +115,6 @@ function VaultsCtrl(Blob, Aes) {
 	var mapped = r.map(function(j) { return new Vault(j); });
 	window._mapped = mapped;
 	self.vaults = mapped;
-	self.selected = self.vaults[0];
     });
     self.addCard = function(vault) {
 	vault.cards.push(new Card());
@@ -156,7 +155,9 @@ function VaultsCtrl(Blob, Aes) {
 	}
     }
     self.select = function(vault) {
-	self.selected.selected = false;
+	if (self.selected) {
+	    self.selected.selected = false;
+	}
 	self.selected = vault;
 	vault.selected = true;
     }

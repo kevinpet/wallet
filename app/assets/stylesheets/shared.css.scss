@@ -5,6 +5,8 @@ $trim_a: #bff;
 $main_bg: white;
 $main_fg: #466;
 $main_a: #336868;
+$vault_bg: #def;
+$vault_fg: #244;
 body {
     background-color: $trim_bg;
     color: $trim_fg;
@@ -78,4 +80,42 @@ h2 {
 .menu > li:nth-child(1):before {
   content: "";
   padding: 0;
+}
+.vault {
+    padding: 3px;
+    background-color: $vault_bg;
+    color: $vault_fg;
+    position: relative;
+}
+.controls {
+    position: absolute;
+    right: 20px;
+    top: 10px;
+}
+#vault-selection {
+    width: 100%;
+    overflow: auto;
+    background-color: $main_bg;
+}
+.vault-button {
+    height: 50px;
+    width: 100px;
+    float: left;
+}
+.select-border {
+    height: 30px;
+    width: 80px;
+    padding: 5px;
+    margin-left: auto;
+    margin-right: auto;
+    bottom: 0;
+    background-color: $vault_bg;
+}
+.border-selected {
+    background-color: $main_bg;
+    border: 5px solid $vault_bg;
+}
+.border-normal {
+    background-color: $vault_bg;
+    border: 5px solid $main_bg;
 }
