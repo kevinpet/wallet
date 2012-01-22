@@ -3,9 +3,9 @@
   <h1><%= link_to "JS Wallet", home_path %><br/></h1>
   <h2>Online password storage for the paranoid.</h2>
   </span>
-  <ul class="menu" id="user_nav"
+  <ul class="menu" id="user_nav">
    <% if logged_in? %>
-     <li>Welcome <%= current_user.username %></li>
+     <li><%= link_to "Welcome, #{current_user.username.capitalize}", home_path %></li>
      <li><%= link_to "Log out", logout_path %></li>
    <% else %>
      <li><%= link_to "Sign up", signup_path %></li>

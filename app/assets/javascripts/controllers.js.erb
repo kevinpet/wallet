@@ -72,7 +72,6 @@ function VaultsCtrl(Blob, Aes) {
 	}
 	var ptext = angular.toJson(this.cards.filter(function(c) { return !c.deleted }).map(function(c) { return c.toSerial() }));
 	this.resource.ctext = Aes.encrypt(this.key, this.iv, ptext);
-	console.log("serialized " + ptext + " to " + this.resource.ctext);
     }	
     Vault.prototype.progress = function (status) {
 	this.status = status;
@@ -121,7 +120,6 @@ function VaultsCtrl(Blob, Aes) {
 	vault.cards.push(new Card());
     }
     self.save = function(vault) {
-	console.log(vault);
 	vault.serialize();
 	if (vault.resource.id) {
 	    vault.resource.$update();
@@ -169,14 +167,11 @@ function VaultsCtrl(Blob, Aes) {
 	self.$eval();
     }
     self.unlock = function(password, vault) {
-	console.log("unlocking", vault);
 	Aes.precompute(password, vault, function() {
 	    var ptext;
 	    if (vault.resource.ctext) {
-		console.log("Decrypting " + vault.resource.ctext);
 		ptext = Aes.decrypt(vault.key, vault.iv, vault.resource.ctext);
 	    } else {
-		console.log("Nothing to decrypt");
 		ptext = [];
 	    }
 	    vault.unlock(ptext);

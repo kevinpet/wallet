@@ -33,10 +33,9 @@
     <div ng:switch-default class="vault unlocked">
       <span ng:show="selected.status">{{selected.status}}</span>
       <div class="controls">
-	<button ng:click="addCard(selected)">Add Card...</button>
+	<button ng:click="lock(selected)">Save and Lock</button>
 	<button ng:click="save(selected)">Save</button>
 	<button ng:click="editDetails(selected)">Settings...</button>
-	<button ng:click="lock(selected)">Lock</button>
 	<button ng:click="remove(selected)">Delete</button>
       </div>
       <div class="vault-body">
@@ -60,6 +59,7 @@
 	    </ng:switch>
 	  </li>
 	</ul>
+	<button ng:click="addCard(selected)">New Entry...</button>
       </div>
     </div>
   </ng:switch>
