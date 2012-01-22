@@ -149,7 +149,9 @@ function VaultsCtrl(Blob, Aes) {
     self.remove = function(vault) {
 	if (confirm("Permanently remove '" + vault.resource.name + "'?")) {
 	    self.vaults.splice(self.vaults.indexOf(vault),1);
-	    vault.resource.$delete();
+	    if (vault.resource.id) {
+		vault.resource.$delete();
+	    }
 	}
 	if (self.selected == vault) {
 	    self.selected = null;
