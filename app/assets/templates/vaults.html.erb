@@ -2,10 +2,10 @@
   <div ng:repeat="vault in vaults" ng:click="select(vault)" class="vault-button">
     <ng:switch on="vault == selected">
       <div ng:switch-when="true" class="select-border border-selected">
-	{{ vault.resource.name }}
+	{{ vault | dirtyTitle}}
       </div>
       <div ng:switch-default class="select-border border-normal">
-	{{ vault.resource.name }}
+	{{ vault | dirtyTitle }}
       </div>
     </ng:switch>
   </div>
@@ -19,48 +19,48 @@
 <div ng:show="selected">
   <ng:switch on="selected.locked">
     <div ng:switch-when="true" class="vault locked">
-      <h2>{{ selected | titleVault }}</h2>
-      <img src="<%= asset_path 'lock-locked.jpg' %>" height="200"/>
       <span ng:show="selected.status">{{selected.status}}</span>
       <div class="controls">
-	<button ng:click="save(selected)">Save</button>
 	<button ng:click="remove(selected)">Delete</button>
       </div>
-      <form ng:submit="unlock(password, selected);password='';">
-	<input type="password" name="password" size="30" />
-	<input type="submit" value="Unlock"/>
-      </form>
+      <div class="vault-body">
+	<form ng:submit="unlock(password, selected);password='';">
+	  <input type="password" name="password" size="30" />
+	  <input type="submit" value="Unlock"/>
+	</form>
+      </div>
     </div>
     <div ng:switch-default class="vault unlocked">
-      <h2>{{ selected.resource.name }}</h2>
-      <img src="<%= asset_path 'lock-unlocked.jpg' %>" height="50" ng:click="lock(selected)"/>
       <span ng:show="selected.status">{{selected.status}}</span>
       <div class="controls">
 	<button ng:click="addCard(selected)">Add Card...</button>
+	<button ng:click="save(selected)">Save</button>
 	<button ng:click="editDetails(selected)">Settings...</button>
 	<button ng:click="lock(selected)">Lock</button>
 	<button ng:click="remove(selected)">Delete</button>
       </div>
-      <ul>
-	<li class="cards" ng:repeat="card in selected.cards">
-	  <ng:switch on="card.deleted">
-	    <div ng:switch-when="true">
-	      <strike>{{ card.name }}</strike>
-	      <button ng:click="selected.remove(card)">Purge Deleted</button>
-	      <button ng:click="card.deleted = false">Restore</button>
-	    </div>
-	    <div ng:switch-default>
-	      {{ card.name }}
-	      <button ng:click="card.toggle()">Show/Hide</button>
-	      <button ng:click="card.deleted = true">Delete</button>
-	      <div ng:show="card.expanded">
-		<input name="card.name"/><br/>
-		<textarea name="card.details" rows="4" columns="30"></textarea>
+      <div class="vault-body">
+	<ul>
+	  <li class="cards" ng:repeat="card in selected.cards">
+	    <ng:switch on="card.deleted">
+	      <div ng:switch-when="true">
+		<strike>{{ card.name }}</strike>
+		<button ng:click="selected.remove(card)">Purge Deleted</button>
+		<button ng:click="card.deleted = false">Restore</button>
 	      </div>
-	    </div>
-	  </ng:switch>
-	</li>
-      </ul>
+	      <div ng:switch-default>
+		{{ card.name }}
+		<button ng:click="card.toggle()">Show/Hide</button>
+		<button ng:click="card.deleted = true">Delete</button>
+		<div ng:show="card.expanded">
+		  <input name="card.name"/><br/>
+		  <textarea name="card.details" rows="4" columns="30"></textarea>
+		</div>
+	      </div>
+	    </ng:switch>
+	  </li>
+	</ul>
+      </div>
     </div>
   </ng:switch>
 </div>

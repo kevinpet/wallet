@@ -53,9 +53,6 @@ function VaultsCtrl(Blob, Aes) {
     var Vault = function(resource) {
 	if (resource) {
 	    this.resource = resource;
-	    if (!this.resource.ctext) {
-		this.unlock();
-	    }
 	} else {
 	    this.cards = [];
 	    this.locked = false;
@@ -64,15 +61,19 @@ function VaultsCtrl(Blob, Aes) {
     }
     Vault.prototype.locked = true;
     Vault.prototype.lock = function() {
-	if (this.locked) {
-	    return;
-	}
+	this.serialize();
 	this.locked = true;
-	var ptext = angular.toJson(this.cards.filter(function(c) { return !c.deleted }).map(function(c) { return c.toSerial() }));
-	this.resource.ctext = Aes.encrypt(this.key, this.iv, ptext);
 	this.cards = null;
 	this.progress(null);
     };
+    Vault.prototype.serialize = function() {
+	if (this.locked) {
+	    return;
+	}
+	var ptext = angular.toJson(this.cards.filter(function(c) { return !c.deleted }).map(function(c) { return c.toSerial() }));
+	this.resource.ctext = Aes.encrypt(this.key, this.iv, ptext);
+	console.log("serialized " + ptext + " to " + this.resource.ctext);
+    }	
     Vault.prototype.progress = function (status) {
 	this.status = status;
 	self.$eval();
@@ -120,6 +121,8 @@ function VaultsCtrl(Blob, Aes) {
 	vault.cards.push(new Card());
     }
     self.save = function(vault) {
+	console.log(vault);
+	vault.serialize();
 	if (vault.resource.id) {
 	    vault.resource.$update();
 	} else {
@@ -166,8 +169,16 @@ function VaultsCtrl(Blob, Aes) {
 	self.$eval();
     }
     self.unlock = function(password, vault) {
+	console.log("unlocking", vault);
 	Aes.precompute(password, vault, function() {
-	    var ptext = Aes.decrypt(vault.key, vault.iv, vault.resource.ctext);
+	    var ptext;
+	    if (vault.resource.ctext) {
+		console.log("Decrypting " + vault.resource.ctext);
+		ptext = Aes.decrypt(vault.key, vault.iv, vault.resource.ctext);
+	    } else {
+		console.log("Nothing to decrypt");
+		ptext = [];
+	    }
 	    vault.unlock(ptext);
 	});
     };
