@@ -27,7 +27,6 @@ AppCtrl.$inject = ['$route', '$location', '$window', '$xhr'];
 function VaultsCtrl(Blob, Aes) {
     function Card(json) {
 	if (json) {
-	    this.id = json.id;
 	    this.name = json.name;
 	    this.details = json.details;
 	    this.expanded = false;
@@ -72,7 +71,25 @@ function VaultsCtrl(Blob, Aes) {
 	}
 	var ptext = angular.toJson(this.cards.filter(function(c) { return !c.deleted }).map(function(c) { return c.toSerial() }));
 	this.resource.ctext = Aes.encrypt(this.key, this.iv, ptext);
-    }	
+    }
+    Vault.prototype.import = function(data) {
+	if (data) {
+	    var lines = data.split('\n');
+	    for (var i = 0; i < lines.length; i++) {
+		var fields = lines[i].split(',');
+		if (!fields[0] || fields[0] == "uuid") {
+		    continue;
+		}
+		var name = fields[1] + "/" + fields[2];
+		var details = "user: " + fields[4] + "\npass: " + fields[5] + "\nurl: " + fields[3] + "\nnotes:" + fields[6];
+		this.cards.push(new Card({ name: name, details: details}));
+	    }
+	    this.importing = false;
+	    data = null;
+	} else {
+	    this.importing = true;
+	}
+    };
     Vault.prototype.progress = function (status) {
 	this.status = status;
 	self.$eval();

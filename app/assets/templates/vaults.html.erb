@@ -36,7 +36,8 @@
 	<button ng:click="lock(selected)">Save and Lock</button>
 	<button ng:click="save(selected)">Save</button>
 	<button ng:click="editDetails(selected)">Settings...</button>
-	<button ng:click="remove(selected)">Delete</button>
+	<button ng:click="selected.import()">Import...</button>
+	<button ng:click="remove(selected)">Delete...</button>
       </div>
       <div class="vault-body">
 	<ul>
@@ -60,6 +61,12 @@
 	  </li>
 	</ul>
 	<button ng:click="addCard(selected)">New Entry...</button>
+	<div ng:show="selected.importing">
+	  Format is: <tt>uuid,group,title,url,user,password,notes</tt><br/>
+	  <textarea name="importData" rows="5" cols="60"/>
+	  <br/>
+	  <button ng:click="selected.import(importData)">Import</button>
+	</div>
       </div>
     </div>
   </ng:switch>
