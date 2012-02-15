@@ -28,7 +28,11 @@ function VaultsCtrl(Blob, Aes) {
     function Card(json) {
 	if (json) {
 	    this.name = json.name;
+	    this.url = json.url;
+	    this.login = json.login;
+	    this.password = json.password;
 	    this.details = json.details;
+	    this.category = json.category;
 	    this.expanded = false;
 	} else {
 	    this.name = "Unnamed";
@@ -36,15 +40,19 @@ function VaultsCtrl(Blob, Aes) {
 	}
     }
     Card.prototype.deleted = false;
-    Card.prototype.toggle = function() {
-	this.expanded = !this.expanded;
-    }
     Card.prototype.hide = function() {
 	this.expanded = false;
+    }
+    Card.prototype.toggle = function() {
+	this.expanded = !this.expanded;
     }
     Card.prototype.toSerial = function() {
 	var card = {
 	    name: this.name,
+	    url: this.url,
+	    login: this.login,
+	    password: this.password,
+	    category: this.category,
 	    details: this.details
 	};
 	return card;
@@ -54,23 +62,10 @@ function VaultsCtrl(Blob, Aes) {
 	    this.resource = resource;
 	} else {
 	    this.cards = [];
+	    this.categories = {};
 	    this.locked = false;
 	    this.resource = new Blob();
 	}
-    }
-    Vault.prototype.locked = true;
-    Vault.prototype.lock = function() {
-	this.serialize();
-	this.locked = true;
-	this.cards = null;
-	this.progress(null);
-    };
-    Vault.prototype.serialize = function() {
-	if (this.locked) {
-	    return;
-	}
-	var ptext = angular.toJson(this.cards.filter(function(c) { return !c.deleted }).map(function(c) { return c.toSerial() }));
-	this.resource.ctext = Aes.encrypt(this.key, this.iv, ptext);
     }
     Vault.prototype.import = function(data) {
 	if (data) {
@@ -80,9 +75,7 @@ function VaultsCtrl(Blob, Aes) {
 		if (!fields[0] || fields[0] == "uuid") {
 		    continue;
 		}
-		var name = fields[1] + "/" + fields[2];
-		var details = "user: " + fields[4] + "\npass: " + fields[5] + "\nurl: " + fields[3] + "\nnotes:" + fields[6];
-		this.cards.push(new Card({ name: name, details: details}));
+		this.cards.push(new Card({ category: fields[1], name: fields[2], login: fields[4], password: fields[5], url: fields[3], details: fields[6]}));
 	    }
 	    this.importing = false;
 	    data = null;
@@ -90,6 +83,13 @@ function VaultsCtrl(Blob, Aes) {
 	    this.importing = true;
 	}
     };
+    Vault.prototype.lock = function() {
+	this.serialize();
+	this.locked = true;
+	this.cards = null;
+	this.progress(null);
+    };
+    Vault.prototype.locked = true;
     Vault.prototype.progress = function (status) {
 	this.status = status;
 	self.$eval();
@@ -97,6 +97,13 @@ function VaultsCtrl(Blob, Aes) {
     Vault.prototype.remove = function(card) {
 	this.cards.splice(this.cards.indexOf(card),1);
     };
+    Vault.prototype.serialize = function() {
+	if (this.locked) {
+	    return;
+	}
+	var ptext = angular.toJson(this.cards.filter(function(c) { return !c.deleted }).map(function(c) { return c.toSerial() }));
+	this.resource.ctext = Aes.encrypt(this.key, this.iv, ptext);
+    }
     Vault.prototype.setPassword = function(password) {
 	this.resource.salt = null;
 	this.key = null;
@@ -115,6 +122,19 @@ function VaultsCtrl(Blob, Aes) {
 	}
 	this.locked = false;
 	this.cards = contents.map(function(c) { return new Card(c); });
+	var numCards = this.cards.length;
+	for (var i = 0; i < numCards; i++) {
+	    var pieces = this.cards[i].name.split('/');
+	    var categoryDepth = pieces.length - 1;
+	    var start = this.categories;
+	    for (var j = 0; j < categoryDepth; j++) {
+		console.log(pieces[j]);
+		start[pieces[j]] = start[pieces[j]] || {};
+	    }
+	    console.log(pieces);
+	    start[pieces[categoryDepth - 1]] = this.cards[i];
+	}
+	console.log(this.categories);
 	this.resource.ctext = null;
 	this.progress(null);
     };
