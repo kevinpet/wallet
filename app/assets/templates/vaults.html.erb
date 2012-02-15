@@ -51,14 +51,18 @@
 		<button ng:click="card.deleted = false">Restore</button>
 	      </div>
 	      <div ng:switch-default>
-		{{ card.name }}
+		<a href="{{ card.url }}" target="_blank" ng:show="card.url">
+		  {{ card.name }}
+		</a>
+		<span ng:show="!card.url">{{ card.name }}</span>
+		<span ng:show="card.login">({{ card.login }})</span>
 		<button ng:click="card.toggle()">Show/Hide</button>
 		<button ng:click="card.deleted = true">Delete</button>
 		<div ng:show="card.expanded">
+		  Name: <input name="card.name"/><br/>
 		  URL: <input name="card.url"/><br/>
 		  Login: <input name="card.login"/><br/>
 		  Password: <input name="card.password"/><br/>
-		  <input name="card.name"/><br/>
 		  <textarea name="card.details" rows="4" columns="30"></textarea>
 		</div>
 	      </div>
