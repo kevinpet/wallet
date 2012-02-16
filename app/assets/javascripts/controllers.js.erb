@@ -43,6 +43,9 @@ function VaultsCtrl(Blob, Aes) {
     Card.prototype.hide = function() {
 	this.expanded = false;
     }
+    Card.prototype.show = function() {
+	this.shown = !this.shown;
+    }
     Card.prototype.toggle = function() {
 	this.expanded = !this.expanded;
     }
@@ -62,7 +65,6 @@ function VaultsCtrl(Blob, Aes) {
 	    this.resource = resource;
 	} else {
 	    this.cards = [];
-	    this.categories = {};
 	    this.locked = false;
 	    this.resource = new Blob();
 	}
@@ -122,19 +124,6 @@ function VaultsCtrl(Blob, Aes) {
 	}
 	this.locked = false;
 	this.cards = contents.map(function(c) { return new Card(c); });
-	var numCards = this.cards.length;
-	for (var i = 0; i < numCards; i++) {
-	    var pieces = this.cards[i].name.split('/');
-	    var categoryDepth = pieces.length - 1;
-	    var start = this.categories;
-	    for (var j = 0; j < categoryDepth; j++) {
-		console.log(pieces[j]);
-		start[pieces[j]] = start[pieces[j]] || {};
-	    }
-	    console.log(pieces);
-	    start[pieces[categoryDepth - 1]] = this.cards[i];
-	}
-	console.log(this.categories);
 	this.resource.ctext = null;
 	this.progress(null);
     };

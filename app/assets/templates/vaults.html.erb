@@ -33,7 +33,8 @@
     <div ng:switch-default class="vault unlocked">
       <span ng:show="selected.status">{{selected.status}}</span>
       <div class="controls">
-	<button ng:click="lock(selected)">Save and Lock</button>
+	<button ng:click="lock(selected)">Lock</button>
+	<button ng:click="save(selected);lock(selected)">Save and Lock</button>
 	<button ng:click="save(selected)">Save</button>
 	<button ng:click="editDetails(selected)">Settings...</button>
 	<button ng:click="selected.import()">Import...</button>
@@ -56,8 +57,12 @@
 		</a>
 		<span ng:show="!card.url">{{ card.name }}</span>
 		<span ng:show="card.login">({{ card.login }})</span>
-		<button ng:click="card.toggle()">Show/Hide</button>
+		<button ng:click="card.show()">{{ card.shown | expandShow }}</button>
+		<button ng:click="card.toggle()">{{ card.expanded | expandEdit }}</button>
 		<button ng:click="card.deleted = true">Delete</button>
+		<div ng:show="card.shown">
+		  Password: {{ card.password }}<br/>
+		</div>
 		<div ng:show="card.expanded">
 		  Name: <input name="card.name"/><br/>
 		  URL: <input name="card.url"/><br/>
