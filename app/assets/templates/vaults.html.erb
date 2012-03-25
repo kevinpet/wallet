@@ -9,7 +9,7 @@
       </div>
     </ng:switch>
   </div>
-  <div ng:click="addVault()" class="vault-button">
+  <div ng:click="addVault()" class="vault-button" ng:show="allowNewEdit">
     <div class="select-border border-normal">
       New...
     </div>
@@ -36,7 +36,7 @@
 	<button ng:click="lock(selected)">Lock</button>
 	<button ng:click="save(selected);lock(selected)">Save and Lock</button>
 	<button ng:click="save(selected)">Save</button>
-	<button ng:click="editDetails(selected)">Settings...</button>
+	<button ng:click="editDetails(selected)" ng:show="allowNewEdit">Settings...</button>
 	<button ng:click="selected.importCsv()">Import...</button>
 	<button ng:click="remove(selected)">Delete...</button>
       </div>

@@ -159,10 +159,6 @@ function VaultsCtrl(Blob, Aes) {
 		 crypto: crypto || "aesStandard",
 		 cryptos: Aes.versions };
     }
-    self.editDetails = function(vault) {
-	var updateInfo = showModalDialog("wallets/" + vault.id + "/edit", vaultDetails(vault.resource.name, vault.resource.crypto, false), "dialogwidth: 500; dialogheight: 500; ");
-	vault.update(updateInfo);
-    }
     self.addVault = function() {
 	var vault = new Vault();
 	var creationInfo = showModalDialog("wallets/new", vaultDetails("Untitled", null, true), "dialogwidth: 450; dialogheight: 300; ");
@@ -171,6 +167,15 @@ function VaultsCtrl(Blob, Aes) {
 	    self.vaults.push(vault);
 	    self.selected = vault;
 	}
+    }
+    self.allowNewEdit = !(!showModalDialog);
+    self.editDetails = function(vault) {
+	var updateInfo = showModalDialog("wallets/" + vault.id + "/edit", vaultDetails(vault.resource.name, vault.resource.crypto, false), "dialogwidth: 500; dialogheight: 500; ");
+	vault.update(updateInfo);
+    }
+    self.lock = function(vault) {
+	vault.lock();
+	self.$eval();
     }
     self.remove = function(vault) {
 	if (confirm("Permanently remove '" + vault.resource.name + "'?")) {
@@ -189,10 +194,6 @@ function VaultsCtrl(Blob, Aes) {
 	}
 	self.selected = vault;
 	vault.selected = true;
-    }
-    self.lock = function(vault) {
-	vault.lock();
-	self.$eval();
     }
     self.unlock = function(password, vault) {
 	Aes.precompute(password, vault, function() {
