@@ -4,6 +4,7 @@ class User < ActiveRecord::Base
 
   attr_accessor :password
   before_save :prepare_password
+  before_create { generate_token(:auth_token) }
 
   has_many :pockets
   has_many :wallets, :through => :pockets
@@ -24,6 +25,12 @@ class User < ActiveRecord::Base
 
   def encrypt_password(pass)
     BCrypt::Engine.hash_secret(pass, password_salt)
+  end
+
+  def generate_token(column)
+    begin
+      self[column] = SecureRandom.urlsafe_base64
+    end while User.exists?(column => self[column])
   end
 
   private
