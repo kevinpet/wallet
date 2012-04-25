@@ -32,6 +32,21 @@
     </div>
     <div ng:switch-default class="vault unlocked">
       <span ng:show="selected.status">{{selected.status}}</span>
+      <div class="settings" ng:show="selected.details">
+	<div>
+	  <label name="selected.details.name">Name:</label>
+	  <input id="vaultName" name="selected.details.name"/><br/>
+	  <label name="selected.details.password">Password:</label>
+	  <input id="password" name="selected.details.password"/><br/>
+	  <label name="selected.details.confirm">Confirm:</label>
+	  <input id="confirm" name="selected.details.confirm"/><br/>
+	  <label name="selected.details.crypto">Encryption: </label>
+	  <select name="selected.details.crypto" ng:options="c for c in selected.details.cryptos"></select>
+	  <br/>
+	  <button name="submit" id="createButton" value="Set Password" ng:click="update(selected)">Set Password</button>
+	  <button ng:click="cancelDetails(selected)">Cancel</button>
+	</div>
+      </div>
       <div class="controls">
 	<button ng:click="lock(selected)">Lock</button>
 	<button ng:click="save(selected);lock(selected)">Save and Lock</button>

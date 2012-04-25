@@ -3,8 +3,9 @@ Hippocket::Application.routes.draw do
   get "welcome/about", :as => :about
 
   resources :pockets
-
   resources :wallets
+
+  match 'ui/ng' => 'ui#ng', :as => :ng_ui
 
   match 'user/edit' => 'users#edit', :as => :edit_current_user
   match 'signup' => 'users#new', :as => :signup

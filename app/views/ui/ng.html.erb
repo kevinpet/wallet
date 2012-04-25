@@ -7,10 +7,7 @@
   <%= csrf_meta_tag %>
 </head>
 <body ng:controller="AppCtrl">
-  <%= render :partial => 'shared/header' %>
-  <div id="container">
   <ng:view></ng:view>
-  </div>
   <%= javascript_include_tag :application -%>
   <script src="/javascripts/angular.min.js" ng:autobind></script>
   <%= javascript_include_tag :crypto -%>

@@ -69,6 +69,7 @@ function VaultsCtrl(Blob, Aes) {
 	    this.resource = new Blob();
 	}
     }
+    Vault.prototype.details = false;
     Vault.prototype.importCsv = function(data) {
 	if (data) {
 	    var lines = data.split('\n');
@@ -127,13 +128,19 @@ function VaultsCtrl(Blob, Aes) {
 	this.resource.ctext = null;
 	this.progress(null);
     }
-    Vault.prototype.update = function(info) {
-	if (!info) {
+    Vault.prototype.update = function() {
+	if (!this.details) {
 	    return;
 	}
-	this.resource.name = info.name;
-	this.resource.crypto = info.crypto;
-	this.setPassword(info.password);
+        if (this.details.password != this.details.confirm) {
+            alert("Passwords do not match");
+	    return;
+        }
+	/* check crypto is in Aes.versions */
+	this.resource.name = this.details.name;
+	this.resource.crypto = this.details.crypto;
+	this.setPassword(this.details.password);
+	this.details = false;
     }
     var self = this;
     Blob.index(function(r, hdrs) {
@@ -153,25 +160,21 @@ function VaultsCtrl(Blob, Aes) {
 	    vault.resource.$create();
 	}
     }
-    function vaultDetails(name, crypto, isNew) {
-	return { name: name || "Untitled",
-		 isNew: isNew,
-		 crypto: crypto || "aesStandard",
-		 cryptos: Aes.versions };
-    }
     self.addVault = function() {
 	var vault = new Vault();
-	var creationInfo = showModalDialog("wallets/new", vaultDetails("Untitled", null, true), "dialogwidth: 450; dialogheight: 300; ");
-	if (creationInfo) {
-	    vault.update(creationInfo);
-	    self.vaults.push(vault);
-	    self.selected = vault;
-	}
+	vault.resource.name = "Untitled";
+	vault.details = { cryptos: Aes.versions }
+	self.vaults.push(vault);
+	self.selected = vault;
     }
     self.allowNewEdit = !(!showModalDialog);
+    self.cancelDetails = function(vault) {
+	vault.details = false;
+    }
     self.editDetails = function(vault) {
-	var updateInfo = showModalDialog("wallets/" + vault.id + "/edit", vaultDetails(vault.resource.name, vault.resource.crypto, false), "dialogwidth: 500; dialogheight: 500; ");
-	vault.update(updateInfo);
+	vault.details = { name: vault.resource.name,
+			  cryptos: Aes.versions,
+			  crypto: vault.resource.crypto }
     }
     self.lock = function(vault) {
 	vault.lock();
@@ -206,34 +209,8 @@ function VaultsCtrl(Blob, Aes) {
 	    vault.unlock(ptext);
 	});
     }
+    self.update = function(vault) {
+	vault.update();
+    }
 }
 VaultsCtrl.$inject = ['Blob', 'Aes'];
-
-function DetailsCtrl() {
-    var self = this;
-    var args = window.dialogArguments;
-    this.name = args.name || "Untitled";
-    this.cryptos = args.cryptos;
-    this.crypto = args.crypto;
-    this.submit = args.isNew ? "Create" : "Save";
-    this.password = "";
-    this.confirm = "";
-    this.cancel = function() {
-	window.close();
-    }
-    this.createVault = function() {
-        if (self.password == self.confirm) {
-            window.returnValue = { name: self.name,
-				   password: self.password,
-				   crypto: self.crypto };
-            window.close();
-        } else {
-            alert("Passwords do not match");
-        } 
-    }
-    document.getElementById("vaultName").value = args.name;
-    if (args.isNew) {
-        document.getElementById("createButton").value = "Create";
-    }
-}
-DetailsCtrl.$inject = [];
