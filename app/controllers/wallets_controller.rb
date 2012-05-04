@@ -1,18 +1,31 @@
 class WalletsController < ApplicationController
   before_filter :login_required
-  before_filter :intercept_html_requests, :except => [:new, :edit]
+  before_filter :own_wallet, :only => [:show, :edit, :destroy]
+
   layout nil
-  respond_to :json
+  respond_to :json, :html
   def index
     @wallets = current_user.wallets
     if (request.xhr?)
       render :json => @wallets
       return
     end
+    if (request.format == :json)
+      send_data @wallets.to_json, :filename => "backup.json"
+      return
+    end
   end
 
   def show
     @wallet = Wallet.find(params[:id])
+    if (request.xhr?)
+      render :json => @wallet
+      return
+    end
+    if (request.format == :json)
+      send_data @wallet.to_json, :filename => @wallet.filename
+      return
+    end
   end
 
   def new
@@ -31,12 +44,10 @@ class WalletsController < ApplicationController
   end
 
   def edit
-    render 'edit_dialog', :layout => false
   end
 
   def update
     params[:wallet].delete(:id)
-    @wallet = Wallet.find(params[:id])
     @wallet.update_attributes(params[:wallet])
     render :json => @wallet
   end
@@ -54,13 +65,18 @@ class WalletsController < ApplicationController
   end
 
   private
-  def intercept_html_requests
-    render 'dynamic' if request.format == Mime::HTML
-  end
-
   def handle_unverified_request
     reset_session
     render "#{Rails.root}/public/500.html", :status => 500, :layout => nil
+  end
+
+  def own_wallet
+    wallet = Wallet.find(params[:id])
+    if wallet.pockets.select { |p| p.user == current_user }.empty?
+      raise "permission denied"
+    else
+      @wallet = wallet
+    end
   end
 
 end

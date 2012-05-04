@@ -5,19 +5,24 @@
     <th>Name</th>
     <th>Salt</th>
     <th>Crypto</th>
-    <th>Ctext</th>
+    <th>Size</th>
+    <th>Created</th>
+    <th>Updated</th>
+    <th>Actions</th>
+    <th>Download</th>
   </tr>
   <% for wallet in @wallets %>
     <tr>
-      <td><%= wallet.name %></td>
+      <td><%= link_to wallet.name, wallet_path(wallet.id) %></td>
       <td><%= wallet.salt %></td>
       <td><%= wallet.crypto %></td>
-      <td><%= wallet.ctext %></td>
-      <td><%= link_to "Show", wallet %></td>
-      <td><%= link_to "Edit", edit_wallet_path(wallet) %></td>
-      <td><%= link_to "Destroy", wallet, :confirm => 'Are you sure?', :method => :delete %></td>
+      <td><%= wallet.ctext.length %></td>
+      <td><%= dt wallet.created_at %></td>
+      <td><%= dt wallet.updated_at %></td>
+      <td><%= link_to "Edit", edit_wallet_path(wallet) %> <%= link_to "Destroy", wallet, :confirm => 'Are you sure?', :method => :delete %></td>
+      <td><%= link_to wallet.filename, wallet_path(wallet, :format => :json) %></td>
     </tr>
   <% end %>
 </table>
 
-<p><%= link_to "New Wallet", new_wallet_path %></p>
+<p><%= link_to "Backup all to JSON", wallets_path(:format => :json) %></p>
