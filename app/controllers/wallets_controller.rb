@@ -2,7 +2,6 @@ class WalletsController < ApplicationController
   before_filter :login_required
   before_filter :own_wallet, :only => [:show, :edit, :destroy]
 
-  layout nil
   respond_to :json, :html
   def index
     @wallets = current_user.wallets
