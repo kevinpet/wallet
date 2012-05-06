@@ -2,8 +2,15 @@
 <html>
   <head>
     <title><%= content_for?(:title) ? yield(:title) : "JS Wallet" %></title>
-    <%= stylesheet_link_tag "application" %>
+    <%= stylesheet_link_tag "shared" %>
+    <link href="<%= asset_path "screen.css"%>" id="bender-style" media="screen" rel="stylesheet" type="text/css"/>
     <%= javascript_include_tag :application %>
+    <script>
+      var bender = bender("bender-style")
+      bender.add("select-screen", "<%= asset_path "screen.css" %>")
+      bender.add("select-mobile", "<%= asset_path "mobile.css" %>", "auto-mobile")
+      $(bender.install())
+    </script>
     <%= csrf_meta_tag %>
     <%= yield(:head) %>
   </head>

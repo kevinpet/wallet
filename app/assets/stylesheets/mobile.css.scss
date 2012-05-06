@@ -1,0 +1,8 @@
+@import "colors.css.scss";
+
+#select-mobile { display: none; }
+#container { width: 100%; padding: 0; }
+.menu { list-style: none; margin: 10px; }
+.menu > li { display: inline; border: 1px solid $primary; padding: 3px; border-radius: 3px; }
+.menu > li a { text-decoration: none; }
+.controls { float:right; }
