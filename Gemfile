@@ -16,6 +16,7 @@ group :test do
   gem 'turn', :require => false
   gem 'mocha'
   gem 'minitest'
+  gem 'jasmine'
 end
 
 group :production do
