@@ -1,6 +1,6 @@
 class WalletsController < ApplicationController
   before_filter :login_required
-  before_filter :own_wallet, :only => [:show, :edit, :destroy]
+  before_filter :own_wallet, :only => [:show, :edit, :destroy, :update]
 
   respond_to :json, :html
   def index
@@ -47,7 +47,12 @@ class WalletsController < ApplicationController
 
   def update
     params[:wallet].delete(:id)
-    @wallet.update_attributes(params[:wallet])
+    update = params[:wallet]
+    @wallet.name = update[:name]
+    @wallet.salt = update[:salt]
+    @wallet.crypto = update[:crypto]
+    @wallet.ctext = update[:ctext]
+    @wallet.save
     render :json => @wallet
   end
 
