@@ -4,3 +4,4 @@ tmp/
 log
 backups
 Gemfile.lock
+.DS_Store
